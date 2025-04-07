@@ -9,35 +9,12 @@
 - Локаль: русская
 - Параметры инициализации задать через переменные окружения
 
-`~/.profile`
-```
-export PGHOST=pg106
-export PGUSERNAME=postgres1
-export PGDATA=$HOME/ckl25
-export PGENCODING=ISO8859-5
-export PGLOCALE=ru_RU.ISO8859-5
-export PGCLIENTENCODING=$PGENCODING
-```
-
 ### Этап 2. Конфигурация и запуск сервера БД
 
 - Способы подключения:
     1. Unix-domain сокет в режиме peer; 
-    ```
-    # TYPE  DATABASE        USER            ADDRESS                 METHOD
-    local   all             all                                     peer
-    ```
     2. сокет TCP/IP, только localhost
-        `$PGDATA/postgresql.conf`
-        ```
-        listen_addresses='localhost'
-        ```
-    
 - Номер порта: 9853
-    `$PGDATA/postgresql.conf`
-    ```
-    port = 9853
-    ```
 - Способ аутентификации TCP/IP клиентов: по имени пользователя
 - Остальные способы подключений запретить.
 - Настроить следующие параметры сервера БД:
@@ -60,11 +37,6 @@ export PGCLIENTENCODING=$PGENCODING
 - Формат лог-файлов: .csv
 - Уровень сообщений лога: ERROR
 - Дополнительно логировать: завершение сессий и продолжительность выполнения команд
-
-
-
-
-
 
 ### Этап 3. Дополнительные табличные пространства и наполнение базы
 
