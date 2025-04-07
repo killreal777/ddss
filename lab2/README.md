@@ -17,6 +17,11 @@ export PGDATA=$HOME/ckl25
 export PGENCODING=ISO8859-5
 export PGLOCALE=ru_RU.ISO8859-5
 export PGCLIENTENCODING=$PGENCODING
+export PGHOST=/tmp
+export PGUSER=postgres1
+export PGDATABASE=postgres
+export PGPORT=9853
+export PATH="$HOME/scripts:$PATH"
 ```
 
 ### Этап 2. Конфигурация и запуск сервера БД
