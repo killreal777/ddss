@@ -171,3 +171,5 @@ LEFT JOIN pg_tablespace t ON t.oid = c.reltablespace
 WHERE t.spcname IS NOT NULL
 ORDER BY tablespace_name, schema_name, object_name;
 ```
+
+SELECT pg_reload_conf();
