@@ -38,9 +38,9 @@ port = 9853
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 local   all             all                                     peer
 # IPv4 local connections:
-host    all             all             127.0.0.1/32            ident
+host    all             all             127.0.0.1/32            password
 # IPv6 local connections:
-host    all             all             ::1/128                 ident
+host    all             all             ::1/128                 password
 ```
 
 - Настроить следующие параметры сервера БД:
@@ -95,7 +95,6 @@ commit_delay = 10000
 # 10 мс — позволит сгруппировать до 5–10 транзакций при высокой нагрузке, снижая количество fsync'ов
 ```
 
-
 - Директория WAL файлов: $PGDATA/pg_wal
 - Формат лог-файлов: .csv
 - Уровень сообщений лога: ERROR
@@ -109,9 +108,6 @@ log_disconnections = on
 log_duration = on
 ```
 
-
-
-
 ### Этап 3. Дополнительные табличные пространства и наполнение базы
 
 - Создать новое табличное пространство для индексов: $HOME/zbn52
@@ -119,3 +115,52 @@ log_duration = on
 - Создать новую роль, предоставить необходимые права, разрешить подключение к базе.
 - От имени новой роли (не администратора) произвести наполнение ВСЕХ созданных баз тестовыми наборами данных. ВСЕ табличные пространства должны использоваться по назначению.
 - Вывести список всех табличных пространств кластера и содержащиеся в них объекты.
+
+```PostgreSQL
+CREATE DATABASE bigwhitedata TEMPLATE template1;
+```
+
+```PostgreSQL
+\l
+```
+
+```PostgreSQL
+CREATE ROLE new_user LOGIN PASSWORD 'qwerty12345';
+GRANT CONNECT ON DATABASE bigwhitedata TO new_user;
+GRANT USAGE ON SCHEMA public TO new_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO new_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO new_user;
+GRANT CREATE ON SCHEMA public TO new_user;
+GRANT CREATE ON TABLESPACE idx_space TO new_user;
+```
+
+```PostgreSQL
+CREATE TABLESPACE idxspс LOCATION '$HOME/zbn52';
+```
+
+```PostgreSQL
+CREATE TABLE test_data (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT now()
+) TABLESPACE pg_default;
+
+CREATE INDEX test_data_idx ON test_data (created_at) TABLESPACE idxspc;
+
+INSERT INTO test_data (name) VALUES 
+('Alice'), ('Bob'), ('Charlie'), ('David'), ('Eve');
+```
+
+```PostgreSQL
+SELECT spcname AS tablespace_name, pg_catalog.pg_get_userbyid(spcowner) AS owner 
+FROM pg_tablespace;
+```
+
+```PostgreSQL
+SELECT n.nspname AS schema_name, c.relname AS object_name, c.relkind, t.spcname AS tablespace_name
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+LEFT JOIN pg_tablespace t ON t.oid = c.reltablespace
+WHERE t.spcname IS NOT NULL
+ORDER BY tablespace_name, schema_name, object_name;
+```
