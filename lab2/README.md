@@ -22,18 +22,31 @@ export PGCLIENTENCODING=$PGENCODING
 ### Этап 2. Конфигурация и запуск сервера БД
 
 - Способы подключения:
-    1. Unix-domain сокет в режиме peer; 
+    1. Unix-domain сокет в режиме peer;
+
+    `$PGDATA/pg_hba.conf.conf`
     ```
     # TYPE  DATABASE        USER            ADDRESS                 METHOD
     local   all             all                                     peer
     ```
     2. сокет TCP/IP, только localhost
+
         `$PGDATA/postgresql.conf`
         ```
         listen_addresses='localhost'
         ```
+        `$PGDATA/pg_hba.conf.conf`
+        ```
+        # TYPE  DATABASE        USER            ADDRESS                 METHOD
+        # IPv4 local connections:
+        host    all             all             127.0.0.1/32            trust
+        # IPv6 local connections:
+        host    all             all             ::1/128                 trust
+        ```
+
     
 - Номер порта: 9853
+
     `$PGDATA/postgresql.conf`
     ```
     port = 9853
