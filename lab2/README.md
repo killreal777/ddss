@@ -172,4 +172,9 @@ WHERE t.spcname IS NOT NULL
 ORDER BY tablespace_name, schema_name, object_name;
 ```
 
+### Допы
+
+Перезагрузка параметров
+```PostgreSQL
 SELECT pg_reload_conf();
+```
